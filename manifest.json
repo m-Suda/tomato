@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "version": "1.0.0",
+  "name": "tomato",
+  "short_name": "tomato",
+  "description": "tomato",
+  "permissions": [
+    "notifications"
+  ],
+  "browser_action": {
+    "default_popup": "tomato.html",
+    "default_icon": "img/tomato_19.png"
+  },
+  "icons": {
+    "16": "img/tomato_16.png",
+    "48": "img/tomato_48.png",
+    "128": "img/tomato_128.png"
+  }
+}
