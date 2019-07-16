@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <title>tomato</title>
     <link rel="stylesheet" type="text/css" href="tomato.css">
+    <script src="scripts/jquery-3.4.1.slim.min.js"></script>
 </head>
 <body>
     <div>
         <label for="work-time">作業時間</label>
         <select id="work-time">
+            <option value="1">1min</option>
             <option value="20">20min</option>
             <option value="25" selected>25min</option>
             <option value="30">30min</option>
@@ -25,7 +27,7 @@
     </div>
     <div id="work-time-count"></div>
     <div id="break-time-count"></div>
-    <button>start!</button>
+    <button id="count-down-start">start!</button>
     <button id="notification-test">notification test</button>
     <script src="tomato.js"></script>
 </body>
