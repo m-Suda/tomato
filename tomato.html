@@ -6,13 +6,25 @@
     <link rel="stylesheet" type="text/css" href="tomato.css">
 </head>
 <body>
-    <label for="work-time">作業時間</label>
-    <input id="work-time" placeholder="">
-    <label for="break-time">休憩時間</label>
-    <input id="break-time" placeholder="">
-    <div id="work-time-count">
-        00:00
+    <div>
+        <label for="work-time">作業時間</label>
+        <select id="work-time">
+            <option value="20">20min</option>
+            <option value="25" selected>25min</option>
+            <option value="30">30min</option>
+        </select>
     </div>
+
+    <div>
+        <label for="break-time">休憩時間</label>
+        <select id="break-time">
+            <option value="5">5min</option>
+            <option value="10">10min</option>
+            <option value="15">15min</option>
+        </select>
+    </div>
+    <div id="work-time-count"></div>
+    <div id="break-time-count"></div>
     <button>start!</button>
     <button id="notification-test">notification test</button>
     <script src="tomato.js"></script>

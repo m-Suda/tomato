@@ -1,4 +1,12 @@
+const workTime = document.getElementById('work-time');
+const breakTime = document.getElementById('break-time');
 const testNotification = document.getElementById('notification-test');
+
+const workTimeCount = document.getElementById('work-time-count');
+const breakTimeCount = document.getElementById('break-time-count');
+
+workTimeCount.innerText = `${workTime.value}:00`;
+breakTimeCount.innerText = `${breakTime.value}:00`;
 
 testNotification.addEventListener('click', () => {
     createNotification();
