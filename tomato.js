@@ -46,7 +46,7 @@ $(() => {
         }, 1000);
     });
 
-    function createNotification() {
+    const createNotification = () => {
         chrome.notifications.create(
             '',
             {
@@ -58,7 +58,7 @@ $(() => {
             (notificationId) => {
                 console.log(`通知が表示されました。通知ID: ${notificationId}`);
             });
-    }
+    };
 
     /**
      * 残り時間が無くなった
@@ -66,25 +66,25 @@ $(() => {
      * @param {number} remainingSecond
      * @return {boolean}
      */
-    function isTimeUp(remainingTimeMinutes, remainingSecond) {
+    const isTimeUp = (remainingTimeMinutes, remainingSecond) => {
         return remainingTimeMinutes === 0 && remainingSecond === 0;
-    }
+    };
 
     /**
      * 1分が経過した
      * @param second
      * @return {boolean}
      */
-    function hasPassedOneMinute(second) {
+    const hasPassedOneMinute = second => {
         return second === 0;
-    }
+    };
 
     /**
      * 2桁までを0埋めする
      * @param {number} num
      * @return {string}
      */
-    function zeroPadding(num) {
+    const zeroPadding = num => {
         return String(num).padStart(2, '0');
-    }
+    };
 });
