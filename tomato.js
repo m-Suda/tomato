@@ -68,7 +68,7 @@ $(() => {
         if (isTimeUp(min, sec)) {
           $workTimeCount.text('Time up!');
           showNotification();
-          clearInterval(intervalId);
+          clearInterval(TIMER);
           return;
         }
 
