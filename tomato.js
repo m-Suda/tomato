@@ -31,6 +31,18 @@ $(() => {
         }, EVERY_SECOND);
     });
 
+    // TODO: イベントページを想定し、Chrome.alarmsを試してみたやつ
+    // $start.on('click', () => {
+    //   chrome.alarms.create('hogeAlarms', {
+    //     delayInMinutes: 1
+    //   });
+    // });
+
+    // chrome.alarms.onAlarm.addListener(alarm => {
+    //   showNotification();
+    //   chrome.alarms.clear('hogeAlarms', bool => {});
+    // });
+
     $stop.on('click', () => {
         clearInterval(TIMER);
     });
