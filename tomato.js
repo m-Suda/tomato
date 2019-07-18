@@ -2,6 +2,11 @@ $(() => {
 
     const EVERY_SECOND = 1000;
 
+    const START = 'start';
+    const STOP = 'stop';
+    const RESTART = 'restart';
+    const RESET = 'reset';
+
     const $workTime = $('#work-time');
     const $breakTime = $('#break-time');
 
@@ -14,49 +19,49 @@ $(() => {
     const $stop = $('#count-down-stop');
     const $reset = $('#timer-reset');
 
-    let TIMER = '';
+    let TIMER = 0;
 
     $workTime.on('change', () => {
         $workTimeCount.text(`${$workTime.val()}:00`);
     });
     $breakTime.on('change', () => {
-        $breakTimeCount.text(`${zeroPadding($breakTime.val())}:00`);
+        $breakTimeCount.text(`${zeroPadding(Number($breakTime.val()))}:00`);
     });
 
     $start.on('click', () => {
         initializeTime();
         TIMER = setInterval(() => {
-            countDown();
             viewTime();
+            countDown();
         }, EVERY_SECOND);
+        sendRequestToBackground({
+            type: START,
+            settingMin: min,
+            settingSec: sec
+        });
     });
-
-    // TODO: イベントページを想定し、Chrome.alarmsを試してみたやつ
-    // $start.on('click', () => {
-    //   chrome.alarms.create('hogeAlarms', {
-    //     delayInMinutes: 1
-    //   });
-    // });
-
-    // chrome.alarms.onAlarm.addListener(alarm => {
-    //   showNotification();
-    //   chrome.alarms.clear('hogeAlarms', bool => {});
-    // });
 
     $stop.on('click', () => {
         clearInterval(TIMER);
+        sendRequestToBackground({ type: STOP });
     });
 
     $restart.on('click', () => {
         TIMER = setInterval(() => {
-            countDown();
             viewTime();
+            countDown();
         }, EVERY_SECOND);
+        sendRequestToBackground({type: RESTART});
     });
 
     $reset.on('click', () => {
         initializeTime();
         viewTime();
+        sendRequestToBackground({
+            type: RESET,
+            settingMin: min,
+            settingSec: sec
+        });
     });
 
     let min = 0;
@@ -66,8 +71,9 @@ $(() => {
      * 残り時間をリセットする。
      */
     const initializeTime = () => {
-        min = Number($workTime.val());
-        sec = 0;
+        // min = Number($workTime.val());
+        min = 0;
+        sec = 10;
         // テスト用
         // min = 0;
         // sec = 5;
@@ -96,24 +102,16 @@ $(() => {
      * 時間を表示する。
      */
     const viewTime = () => {
-      $workTimeCount.text(`${zeroPadding(min)}:${zeroPadding(sec)}`);
+      console.log(`${zeroPadding(min)}:${zeroPadding(sec)}`);
+      // $workTimeCount.text(`${zeroPadding(min)}:${zeroPadding(sec)}`);
     };
 
     /**
-     * Chromeの通知を作成し、表示する。
+     * バックグラウンドにメッセージを送る
+     * @param request
      */
-    const showNotification = () => {
-        chrome.notifications.create(
-            '',
-            {
-                type: 'basic',
-                title: '通知テストだよー',
-                iconUrl: 'img/tomato_128.png',
-                message: 'これは通知の確認用テストです。'
-            },
-            (notificationId) => {
-                console.log(`通知が表示されました。通知ID: ${notificationId}`);
-            });
+    const sendRequestToBackground = request => {
+        chrome.runtime.sendMessage(request);
     };
 
     /**

@@ -5,12 +5,16 @@
   "short_name": "tomato",
   "description": "tomato",
   "permissions": [
-    "notifications",
-    "alarms"
+    "notifications"
   ],
   "browser_action": {
     "default_popup": "tomato.html",
     "default_icon": "img/tomato_19.png"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
   },
   "icons": {
     "16": "img/tomato_16.png",
