@@ -118,6 +118,7 @@ const zeroPadding = num => {
  * Chromeの通知を作成し、表示する。
  */
 const showNotification = () => {
+    chrome.storage.local.clear();
     chrome.notifications.create(
         '',
         {
@@ -128,5 +129,5 @@ const showNotification = () => {
         },
         (notificationId) => {
             console.log(`通知が表示されました。通知ID: ${notificationId}`);
-        });
+    });
 };

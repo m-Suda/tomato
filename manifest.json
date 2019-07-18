@@ -5,7 +5,8 @@
   "short_name": "tomato",
   "description": "tomato",
   "permissions": [
-    "notifications"
+    "notifications",
+    "storage"
   ],
   "browser_action": {
     "default_popup": "tomato.html",

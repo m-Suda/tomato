@@ -28,10 +28,20 @@ $(() => {
         $breakTimeCount.text(`${zeroPadding(Number($breakTime.val()))}:00`);
     });
 
-    $start.on('click', () => {
-        initializeTime();
+    /**
+     * TODO: stopで一旦止めたあと、Startを押さないと正常に動かない
+     *   間違ってRestartを押すと通知がバグる
+     */
+    $start.on('click', async () => {
+        if (await isStarted()) {
+            const {remainingMin, remainingSec} = await fetchRemainingTime();
+            min = remainingMin;
+            sec = remainingSec;
+        } else {
+            initializeTime();
+        }
         TIMER = setInterval(() => {
-            viewTime();
+            viewTime(min, sec);
             countDown();
         }, EVERY_SECOND);
         sendRequestToBackground({
@@ -41,22 +51,27 @@ $(() => {
         });
     });
 
-    $stop.on('click', () => {
+    /**
+     * TODO: Stopを押したとき、秒数が1秒少なく登録される
+     */
+    $stop.on('click', async () => {
         clearInterval(TIMER);
+        await setRemainingTime();
         sendRequestToBackground({ type: STOP });
     });
 
     $restart.on('click', () => {
         TIMER = setInterval(() => {
-            viewTime();
+            viewTime(min, sec);
             countDown();
         }, EVERY_SECOND);
         sendRequestToBackground({type: RESTART});
     });
 
-    $reset.on('click', () => {
+    $reset.on('click', async () => {
         initializeTime();
-        viewTime();
+        viewTime(min, sec);
+        await setIsNotStarted();
         sendRequestToBackground({
             type: RESET,
             settingMin: min,
@@ -68,15 +83,66 @@ $(() => {
     let sec = 0;
 
     /**
+     * 既にタイマーがスタートしている。
+     * @return {Promise<boolean>}
+     */
+    const isStarted = () => {
+        return new Promise(resolve => {
+            chrome.storage.local.get(['isStarted'], result => {
+                if (!Object.keys(result).length) {
+                    return resolve(false);
+                }
+                return resolve(result.isStarted);
+            });
+        });
+    };
+
+    /**
+     * Storageから残り時間を取得する。
+     * @return {Promise<Object>}
+     */
+    const fetchRemainingTime = () => {
+        return new Promise(resolve => {
+            chrome.storage.local.get(['remainingMin', 'remainingSec'], result => {
+                return resolve({
+                    remainingMin: result.remainingMin,
+                    remainingSec: result.remainingSec
+                });
+            });
+        });
+    };
+
+    /**
+     * 残り時間を保存する。
+     * @return {Promise<void>}
+     */
+    const setRemainingTime = () => {
+        return new Promise(resolve => {
+            chrome.storage.local.set({
+                isStarted: true,
+                remainingMin: min,
+                remainingSec: sec
+            }, () => resolve());
+        });
+    };
+
+    /**
+     * 残り時間を保存する。
+     * @return {Promise<void>}
+     */
+    const setIsNotStarted = () => {
+        return new Promise(resolve => {
+            chrome.storage.local.set({isStarted: false}, () => resolve());
+        });
+    };
+
+    /**
      * 残り時間をリセットする。
      */
     const initializeTime = () => {
-        // min = Number($workTime.val());
         min = 0;
-        sec = 10;
-        // テスト用
-        // min = 0;
-        // sec = 5;
+        // min = Number($workTime.val());
+        sec = 30;
     };
 
     /**
@@ -85,7 +151,6 @@ $(() => {
     const countDown = () => {
         if (isTimeUp(min, sec)) {
           $workTimeCount.text('Time up!');
-          showNotification();
           clearInterval(TIMER);
           return;
         }
@@ -101,9 +166,8 @@ $(() => {
     /**
      * 時間を表示する。
      */
-    const viewTime = () => {
-      console.log(`${zeroPadding(min)}:${zeroPadding(sec)}`);
-      // $workTimeCount.text(`${zeroPadding(min)}:${zeroPadding(sec)}`);
+    const viewTime = (viewMin, viewSec) => {
+      $workTimeCount.text(`${zeroPadding(viewMin)}:${zeroPadding(viewSec)}`);
     };
 
     /**
@@ -141,4 +205,27 @@ $(() => {
     const zeroPadding = num => {
         return String(num).padStart(2, '0');
     };
+
+    /**
+     * 時間の初期表示をする。
+     * TODO: const定義のため、上で宣言するともろもろのメソッドが使えない。
+     *   眠くて適当に持ってきたので、修正必須
+     * @return {Promise<void>}
+     */
+    const initViewTime = async () => {
+        let initViewMin = 0;
+        let initViewSec = 0;
+        if (await isStarted()) {
+            const {remainingMin, remainingSec} = await fetchRemainingTime();
+            initViewMin = remainingMin;
+            initViewSec = remainingSec;
+        } else {
+            initViewMin = 25;
+            initViewSec = 0;
+        }
+
+        viewTime(initViewMin, initViewSec);
+    };
+    initViewTime();
+
 });
