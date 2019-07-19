@@ -27,14 +27,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 const start = ({settingMin, settingSec}) => {
     initializeTime(settingMin, settingSec);
     TIMER = setInterval(() => {
-        viewTime();
         countDown();
     }, EVERY_SECOND);
 };
 
 const restart = () => {
     TIMER = setInterval(() => {
-        viewTime();
         countDown();
     }, EVERY_SECOND);
 };
@@ -55,17 +53,16 @@ let sec = 0;
  * カウントダウンする
  */
 const countDown = () => {
-    if (isTimeUp(min, sec)) {
-        clearInterval(TIMER);
-        showNotification();
-        return;
-    }
-
     if (hasPassedOneMinute(sec)) {
         min--;
         sec = 59;
     } else {
         sec--;
+    }
+
+    if (isTimeUp(min, sec)) {
+        showNotification();
+        clearInterval(TIMER);
     }
 };
 

@@ -29,8 +29,7 @@ $(() => {
     });
 
     /**
-     * TODO: stopで一旦止めたあと、Startを押さないと正常に動かない
-     *   間違ってRestartを押すと通知がバグる
+     * STARTボタンクリックイベント
      */
     $start.on('click', async () => {
         if (await isStarted()) {
@@ -41,8 +40,8 @@ $(() => {
             initializeTime();
         }
         TIMER = setInterval(() => {
-            viewTime(min, sec);
             countDown();
+            viewTime(min, sec);
         }, EVERY_SECOND);
         sendRequestToBackground({
             type: START,
@@ -52,7 +51,7 @@ $(() => {
     });
 
     /**
-     * TODO: Stopを押したとき、秒数が1秒少なく登録される
+     * STOPボタンクリックイベント
      */
     $stop.on('click', async () => {
         clearInterval(TIMER);
@@ -60,18 +59,28 @@ $(() => {
         sendRequestToBackground({ type: STOP });
     });
 
-    $restart.on('click', () => {
+    /**
+     * RESTARTボタンクリックイベント
+     */
+    $restart.on('click', async () => {
+        // RESTARTをクリックするタイミングがポップアップを閉じて再表示した後の場合もあるため
+        const {remainingMin, remainingSec} = await fetchRemainingTime();
+        min = remainingMin;
+        sec = remainingSec;
         TIMER = setInterval(() => {
-            viewTime(min, sec);
             countDown();
+            viewTime(min, sec);
         }, EVERY_SECOND);
         sendRequestToBackground({type: RESTART});
     });
 
+    /**
+     * リセットボタンクリックイベント
+     */
     $reset.on('click', async () => {
         initializeTime();
         viewTime(min, sec);
-        await setIsNotStarted();
+        chrome.storage.local.clear();
         sendRequestToBackground({
             type: RESET,
             settingMin: min,
@@ -127,16 +136,6 @@ $(() => {
     };
 
     /**
-     * 残り時間を保存する。
-     * @return {Promise<void>}
-     */
-    const setIsNotStarted = () => {
-        return new Promise(resolve => {
-            chrome.storage.local.set({isStarted: false}, () => resolve());
-        });
-    };
-
-    /**
      * 残り時間をリセットする。
      */
     const initializeTime = () => {
@@ -149,17 +148,16 @@ $(() => {
      * カウントダウンする。
      */
     const countDown = () => {
+        if (hasPassedOneMinute(sec)) {
+            sec = 59;
+            min--;
+        } else {
+            sec--;
+        }
+
         if (isTimeUp(min, sec)) {
           $workTimeCount.text('Time up!');
           clearInterval(TIMER);
-          return;
-        }
-
-        if (hasPassedOneMinute(sec)) {
-          sec = 59;
-          min--;
-        } else {
-          sec--;
         }
     };
 
