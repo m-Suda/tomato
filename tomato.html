@@ -3,35 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>tomato</title>
+    <link rel="stylesheet" type="text/css" href="styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="styles/skeleton.css">
     <link rel="stylesheet" type="text/css" href="tomato.css">
     <script src="scripts/jquery-3.4.1.slim.min.js"></script>
 </head>
 <body>
-    <div>
-        <label for="work-time">作業時間</label>
-        <select id="work-time">
-            <option value="20">20min</option>
-            <option value="25" selected>25min</option>
-            <option value="30">30min</option>
-        </select>
-    </div>
+    <main>
 
-    <div>
-        <label for="break-time">休憩時間</label>
-        <select id="break-time">
-            <option value="5">5min</option>
-            <option value="10">10min</option>
-            <option value="15">15min</option>
-        </select>
-    </div>
-    <div id="work-time-count"></div>
-    <div id="break-time-count"></div>
-    <div id="button-area">
-        <button id="count-down-start">Start</button>
-        <button id="count-down-restart">Restart</button>
-        <button id="count-down-stop">Stop</button>
-        <button id="timer-reset">Reset</button>
-    </div>
+        <h2 id="work-time-count"></h2>
+
+        <div id="timer-setting-area">
+            <div>
+                <label for="work-time">作業時間</label>
+                <select id="work-time">
+                    <option value="20">20min</option>
+                    <option value="25" selected>25min</option>
+                    <option value="30">30min</option>
+                </select>
+            </div>
+
+            <div id="button-area">
+                <button id="count-down-start" class="button-primary">Start</button>
+                <button id="count-down-stop" class="button-stop">Stop</button>
+                <button id="timer-reset">Reset</button>
+            </div>
+        </div>
+    </main>
     <script src="tomato.js"></script>
 </body>
 </html>

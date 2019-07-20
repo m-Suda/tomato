@@ -1,4 +1,39 @@
 body {
-    width: 300px;
+    width: 250px;
     height: 350px;
+    font-family: 'Quicksand', "游ゴシック体", "Yu Gothic", YuGothic, "ヒラギノ角ゴシック Pro", "Hiragino Kaku Gothic Pro", 'メイリオ' , Meiryo , Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+    color: #444444;
+}
+
+main {
+    padding: 8rem 5% 0;
+}
+
+select {
+    width: 100%;
+}
+
+h2 {
+    text-align: center;
+}
+
+button {
+    width: 100%;
+}
+
+#timer-setting-area {
+    margin-top: 5rem;
+}
+
+.button-stop {
+    color: #FFF;
+    background-color: #F06060;
+    border-color: #F06060;
+}
+
+/*Skeleton.cssのbutton固有のhoverを上書きするため*/
+.button-stop:hover {
+    color: #FFF !important;
+    background-color: #db5656 !important;
+    border-color: #db5656 !important;
 }

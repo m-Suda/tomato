@@ -2,10 +2,71 @@ const EVERY_SECOND = 1000;
 
 const START = 'start';
 const STOP = 'stop';
-const RESTART = 'restart';
 const RESET = 'reset';
 
-let TIMER = 0;
+/**
+ * 残り時間オブジェクト
+ * @type {{
+ *      min: number,
+ *      sec: number,
+ *      initialize: (function(number, number): void),
+ *      isDisplayed: (function(): void)
+ * }}
+ */
+const remainingTime = {
+    min: 0,
+    sec: 0,
+    initialize: function(settingMin, settingSec) {
+        this.min = settingMin;
+        this.sec = settingSec;
+    },
+    isDisplayed: function() {
+        console.log(`${zeroPadding(this.min)}:${zeroPadding(this.sec)}`);
+    }
+};
+
+/**
+ * タイマーオブジェクト
+ * @type {{
+ *      value: number
+ *      start: (function(): void),
+ *      stop: (function(): void),
+ *      countDown: (function(): void),
+ *      isFinish: (function(): boolean),
+ *      hasPassedOneMinute: (function(): boolean),
+ * }}
+ */
+const timer = {
+    value: 0,
+    start: function() {
+        this.value = setInterval(() => {
+            this.countDown();
+            remainingTime.isDisplayed();
+        }, EVERY_SECOND);
+    },
+    stop: function() {
+        clearInterval(this.value);
+    },
+    countDown: function() {
+        if (this.hasPassedOneMinute()) {
+            remainingTime.min--;
+            remainingTime.sec = 59;
+        } else {
+            remainingTime.sec--;
+        }
+
+        if (this.isFinish()) {
+            showNotification();
+            this.stop();
+        }
+    },
+    isFinish: function() {
+        return remainingTime.min === 0 && remainingTime.sec === 0;
+    },
+    hasPassedOneMinute: function() {
+        return remainingTime.sec === 0;
+    }
+};
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const {type, settingMin, settingSec} = request;
@@ -16,90 +77,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case STOP:
             stop();
             break;
-        case RESTART:
-            restart();
-            break;
         case RESET:
             reset({settingMin, settingSec});
+            break;
+        case 'getRemainingTime':
+            sendResponse({remainingMin: remainingTime.min, remainingSec: remainingTime.sec});
     }
 });
 
 const start = ({settingMin, settingSec}) => {
-    initializeTime(settingMin, settingSec);
-    TIMER = setInterval(() => {
-        countDown();
-    }, EVERY_SECOND);
-};
-
-const restart = () => {
-    TIMER = setInterval(() => {
-        countDown();
-    }, EVERY_SECOND);
+    remainingTime.initialize(settingMin, settingSec);
+    timer.start();
 };
 
 const stop = () => {
-    clearInterval(TIMER);
+    timer.stop();
 };
 
 const reset = ({settingMin, settingSec}) => {
-    initializeTime(settingMin, settingSec);
-    viewTime();
-};
-
-let min = 0;
-let sec = 0;
-
-/**
- * カウントダウンする
- */
-const countDown = () => {
-    if (hasPassedOneMinute(sec)) {
-        min--;
-        sec = 59;
-    } else {
-        sec--;
-    }
-
-    if (isTimeUp(min, sec)) {
-        showNotification();
-        clearInterval(TIMER);
-    }
-};
-
-/**
- * 残り時間が無くなった
- * @param {number} remainingTimeMinutes
- * @param {number} remainingSecond
- * @return {boolean}
- */
-const isTimeUp = (remainingTimeMinutes, remainingSecond) => {
-    return remainingTimeMinutes === 0 && remainingSecond === 0;
-};
-
-/**
- * 1分が経過した
- * @param second
- * @return {boolean}
- */
-const hasPassedOneMinute = second => {
-    return second === 0;
-};
-
-/**
- * 残り時間をリセットする
- * @param settingMin
- * @param settingSec
- */
-const initializeTime = (settingMin, settingSec) => {
-    min = settingMin;
-    sec = settingSec;
-};
-
-/**
- * 時間を表示する。
- */
-const viewTime = () => {
-    console.log(`${zeroPadding(min)}:${zeroPadding(sec)}`);
+    remainingTime.initialize(settingMin, settingSec);
 };
 
 /**
