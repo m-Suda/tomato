@@ -168,6 +168,7 @@ $(() => {
         $stop.show();
         $reset.hide();
         timer.start();
+        $workTime.prop('disabled', true);
         await status.saveStart();
         sendRequestToBackground({
             type: START,
@@ -193,6 +194,7 @@ $(() => {
      * リセットボタンクリックイベント
      */
     $reset.on('click', async () => {
+        $workTime.prop('disabled', false);
         remainingTime.initialize();
         await remainingTime.saveToStorage();
         remainingTime.isDisplayed();

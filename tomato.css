@@ -1,3 +1,6 @@
+/**
+ ポップアップウィンドウ全体の設定
+----------------------------------------------------------------*/
 body {
     width: 250px;
     height: 350px;
@@ -5,34 +8,47 @@ body {
     color: #444444;
 }
 
+/**
+ ウィンドウ内側
+----------------------------------------------------------------*/
 main {
     padding: 8rem 5% 0;
 }
 
+/**
+ 時間指定セレクトボックスの設定
+----------------------------------------------------------------*/
 select {
     width: 100%;
 }
-
-h2 {
-    text-align: center;
+select:disabled {
+    color: #e9e9e9;
+    border: 1px solid #e4e4e4;
 }
-
-button {
-    width: 100%;
-}
-
 #timer-setting-area {
     margin-top: 5rem;
 }
 
+/**
+ 残り時間表示の設定
+----------------------------------------------------------------*/
+h2 {
+    text-align: center;
+}
+
+/**
+ ボタン関連の設定
+----------------------------------------------------------------*/
+button {
+    width: 100%;
+}
 .button-stop {
     color: #FFF;
     background-color: #F06060;
     border-color: #F06060;
 }
-
-/*Skeleton.cssのbutton固有のhoverを上書きするため*/
 .button-stop:hover {
+    /*Skeleton.cssのbutton固有のhoverを上書きするため*/
     color: #FFF !important;
     background-color: #db5656 !important;
     border-color: #db5656 !important;
