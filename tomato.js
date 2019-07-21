@@ -176,6 +176,8 @@ $(() => {
      * 時間変更イベント
      */
     $workTime.on('change', () => {
+        remainingTime.min = Number($workTime.val());
+        remainingTime.sec = 0;
         $viewWorkTime.text(`${$workTime.val()}:00`);
     });
 
