@@ -41,7 +41,7 @@ const timer = {
     start: function() {
         this.value = setInterval(() => {
             this.countDown();
-            remainingTime.isDisplayed();
+            // remainingTime.isDisplayed();
         }, EVERY_SECOND);
     },
     stop: function() {
