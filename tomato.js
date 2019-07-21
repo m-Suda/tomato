@@ -68,10 +68,12 @@ $(() => {
     /**
      * ステータスオブジェクト
      * @type {{
-     *      isStop: (function(): Promise<void>),
      *      saveStart: (function(): Promise<void>),
      *      saveStop: (function(): Promise<boolean>),
-     *      isStart: (function(): Promise<boolean>)
+     *      saveRemainingTimeReset: (function(bool): Promise<void>),
+     *      isStart: (function(): Promise<boolean>),
+     *      isStop: (function(): Promise<void>),
+     *      isRemainingTimeReset: (function(): Promise<boolean>),
      * }}
      */
     const status = {
@@ -85,10 +87,14 @@ $(() => {
                 chrome.storage.local.set({status: STOP}, () => resolve());
             });
         },
+        saveRemainingTimeReset: function(bool) {
+            return new Promise(resolve => {
+                chrome.storage.local.set({isRemainingTimeReset: bool}, () => resolve());
+            });
+        },
         isStart: function() {
             return new Promise(resolve => {
                 chrome.storage.local.get(['status'], result => {
-                    console.dir(result);
                     if (!Object.keys(result).length) {
                         // 空の時初回インストール時か、TimeUp後のためfalse
                         return resolve(false);
@@ -101,10 +107,21 @@ $(() => {
             return new Promise(resolve => {
                 chrome.storage.local.get(['status'], result => {
                     if (!Object.keys(result).length) {
-                        // 空のときはインストール時、TimeUp後のため、true
+                        // 空のときはインストール時、TimeUp後のためtrue
                         return resolve(true);
                     }
                     return resolve(result.status === STOP);
+                });
+            });
+        },
+        isRemainingTimeReset: function() {
+            return new Promise(resolve => {
+                chrome.storage.local.get(['isRemainingTimeReset'], result => {
+                    // 空の時はインストール時、TimeUp後のためtrue
+                    if (!Object.keys(result).length) {
+                        return resolve(true);
+                    }
+                    return resolve(result.isRemainingTimeReset);
                 });
             });
         }
@@ -170,6 +187,7 @@ $(() => {
         timer.start();
         $workTime.prop('disabled', true);
         await status.saveStart();
+        await status.saveRemainingTimeReset(false);
         sendRequestToBackground({
             type: START,
             settingMin: remainingTime.min,
@@ -199,6 +217,7 @@ $(() => {
         await remainingTime.saveToStorage();
         remainingTime.isDisplayed();
         chrome.storage.local.clear();
+        await status.saveRemainingTimeReset(true);
         sendRequestToBackground({
             type: RESET,
             settingMin: remainingTime.min,
@@ -263,6 +282,11 @@ $(() => {
         remainingTime.min = remainingMin || Number($workTime.val());
         remainingTime.sec = remainingSec || 0;
         remainingTime.isDisplayed();
+
+        // Reset押されるまでは残り時間の変更をしてほしくないため
+        if (!await status.isRemainingTimeReset()) {
+            $workTime.prop('disabled', true);
+        }
     };
     initView();
 
