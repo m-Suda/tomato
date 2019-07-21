@@ -143,6 +143,13 @@ $(() => {
         start: function() {
             this.value = setInterval(function() {
                 timer.countDown();
+                if (timer.isFinish()) {
+                    $viewWorkTime.text('Time up!');
+                    timer.stop();
+                    $stop.hide();
+                    $reset.show();
+                    return;
+                }
                 remainingTime.isDisplayed();
             }, EVERY_SECOND);
         },
@@ -155,11 +162,6 @@ $(() => {
                 remainingTime.min--;
             } else {
                 remainingTime.sec--;
-            }
-
-            if (this.isFinish()) {
-                $viewWorkTime.text('Time up!');
-                this.stop();
             }
         },
         hasPassedOneMinute: function() {
@@ -212,6 +214,7 @@ $(() => {
      * リセットボタンクリックイベント
      */
     $reset.on('click', async () => {
+        $start.show();
         $workTime.prop('disabled', false);
         remainingTime.initialize();
         await remainingTime.saveToStorage();
