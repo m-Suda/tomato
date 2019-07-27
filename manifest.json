@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "name": "tomato",
   "short_name": "tomato",
-  "description": "tomato",
+  "description": "ポモドーロテクニックで使われている時間(20, 25, 30)だけを扱うタイマーです。",
   "permissions": [
     "notifications",
     "storage"
